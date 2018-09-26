@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "fast-csv": "^2.4.1"
+    "fast-csv": "^2.4.1",
+    "xlsx-converter": "^0.1.0"
   }
 }
