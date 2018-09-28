@@ -16,13 +16,16 @@ function convertCsvToQuery(fileName) {
 
     csv
     .fromPath('csv/' + fileName, {headers: true})
-    .validate((data) =>  
-        data['new_bob_status'] && data['new_bob_status'].trim() !== "" && data['Needs to be fixed'] && data['Needs to be fixed'] === 'Y'
-    )
+    .validate((data) => {
+        var bobStatus = data['new_bob_status'] || data['bob_new_status'];
+        return bobStatus && bobStatus.trim() !== "" && data['Needs to be fixed'] && data['Needs to be fixed'].trim() === 'Y'
+    })
     .on("data-invalid", function(data){
     })
     .on("data", function(data){
-        csvStream.write(Object.assign({}, {query: `UPDATE sales_order_item SET fk_sales_order_item_status = (SELECT id_sales_order_item_status FROM sales_order_item_status WHERE NAME = "${data.new_bob_status}") WHERE id_sales_order_item =${data.bob_sales_order_item_id};`}))
+        // console.log(data)
+        var bobStatus = data['new_bob_status'] || data['bob_new_status'];
+        csvStream.write(Object.assign({}, {query: `UPDATE sales_order_item SET fk_sales_order_item_status = (SELECT id_sales_order_item_status FROM sales_order_item_status WHERE NAME = '${bobStatus}') WHERE id_sales_order_item =${data.bob_sales_order_item_id};`}))
     })
     .on("end", function(){
         console.log("done");
@@ -31,3 +34,4 @@ function convertCsvToQuery(fileName) {
 }
 
 files.forEach(convertCsvToQuery);
+// convertCsvToQuery('test.csv')
